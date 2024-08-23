@@ -1,0 +1,128 @@
+# chatgpt-website<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Chat</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 70vh;
+            overflow: hidden;
+        }
+        .chat-output {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        .chat-message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background-color: #3498db;
+            color: white;
+            align-self: flex-end;
+        }
+        .bot-message {
+            background-color: #ecf0f1;
+            align-self: flex-start;
+        }
+        .chat-input {
+            display: flex;
+            align-items: center;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .chat-input button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .chat-input button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-output" id="chat-output"></div>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Введите сообщение..." />
+            <button onclick="sendMessage()">Отправить</button>
+        </div>
+    </div>
+    <script>
+        async function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            if (!userInput) return;
+
+            // Отобразить сообщение пользователя
+            const chatOutput = document.getElementById('chat-output');
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'chat-message user-message';
+            userMessageDiv.textContent = userInput;
+            chatOutput.appendChild(userMessageDiv);
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+            document.getElementById('user-input').value = '';
+
+            // Запрос к ChatGPT
+            const response = await fetch('https://api.openai.com/v1/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer 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`
+                },
+                body: JSON.stringify({
+                    model: "text-davinci-003",
+                    prompt: userInput,
+                    max_tokens: 150
+                })
+            });
+
+            const data = await response.json();
+            const botMessage = data.choices[0].text.trim();
+
+            // Отобразить сообщение ChatGPT
+            const botMessageDiv = document.createElement('div');
+            botMessageDiv.className = 'chat-message bot-message';
+            botMessageDiv.textContent = botMessage;
+            chatOutput.appendChild(botMessageDiv);
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+        }
+    </script>
+</body>
+</html>
